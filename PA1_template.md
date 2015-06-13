@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 Introduction
 
@@ -32,7 +27,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ## Loading the package ggplot2
 
-```{r}
+
+```r
 ## In case ggplot2 not installed then install seperately using the below
 
 ## install.packages("ggplot2")
@@ -40,25 +36,24 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 ## Library ggplot2
 
 library("ggplot2")
-
 ```
 
 ## Loading and preprocessing the data
 
 ## Please ensure that the data file activity.csv is in the R working directory.
 
-```{r}
 
+```r
 #Load the data
 PersonalActivity <- read.csv("activity.csv")
 
 #Clean dates
 PersonalActivity$date <- as.Date(PersonalActivity$date)
-
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 #histogram of the total number of steps taken each day
 
 total.steps <- aggregate(x = PersonalActivity$steps , by = list(PersonalActivity$date), FUN = sum ,na.rm=TRUE)
@@ -68,20 +63,34 @@ histplot <- ggplot(total.steps,aes(x = steps)) +
             xlab("Steps (binwidth 2000)") +
             geom_histogram(binwidth = 2000)
 histplot
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 #mean 
 
 mean(total.steps$steps , na.rm = TRUE)
+```
 
+```
+## [1] 9354.23
+```
+
+```r
 #median 
 
 median(total.steps$steps , na.rm = TRUE)
+```
 
+```
+## [1] 10395
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 #Time series plot of 5-minute interval of average steps
 
 average.steps  <- aggregate(x = PersonalActivity$steps , by = list(PersonalActivity$interval), FUN = mean ,na.rm=TRUE)
@@ -91,19 +100,33 @@ lineplot <- ggplot(average.steps,aes(interval,steps)) +
                  ggtitle("Time Series of Average Steps ") +
                  geom_line()
 lineplot  
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 #The 5-min time interval with maximum number steps
 
 average.steps[which.max(average.steps$steps),c("interval")]
+```
 
+```
+## [1] 835
 ```
 
 ## Imputing missing values
 
-```{r}
+
+```r
 #imputing missing step values with mean step
 nrow(PersonalActivity[is.na(PersonalActivity$steps),])
+```
 
+```
+## [1] 2304
+```
+
+```r
 PersonalActivity.Cleaned <- merge(x = PersonalActivity, y = average.steps, by = "interval", all.x = TRUE)
 PersonalActivity.Cleaned[is.na(PersonalActivity.Cleaned$steps.x),c("steps.x")] <- PersonalActivity.Cleaned[is.na(PersonalActivity.Cleaned$steps.x),c("steps.y")]
 
@@ -123,20 +146,33 @@ histplot <- ggplot(total.steps,aes(x = steps)) +
             xlab("Steps (binwidth 2000)") +
             geom_histogram(binwidth = 2000)
 histplot 
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
+```r
 #mean 
 mean(total.steps$steps , na.rm = TRUE)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 #median 
 median(total.steps$steps , na.rm = TRUE)
+```
 
+```
+## [1] 10766.19
 ```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, fig.width= 10}
+
+```r
 #Factor with two levels weekdaya and weekends.
 PersonalActivity.Cleaned$weekday <- as.factor(ifelse(weekdays(PersonalActivity.Cleaned$date) %in% c("Saturday","Sunday"), "Weekend", "Weekday")) 
 
@@ -151,8 +187,8 @@ lineplot <- ggplot(average.steps.weekday,aes(interval,steps)) +
                  facet_grid(. ~ weekday) +
                  geom_line(size = 1)
 lineplot  
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 
